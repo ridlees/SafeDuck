@@ -1,0 +1,30 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="Auto" Width="Auto" WindowState="Maximized">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel x:Name="canvas" Background="White"
+            MouseLeftButtonDown="CanvasMouseLeftButtonDown"
+            MouseLeftButtonUp="CanvasMouseLeftButtonUp"
+            MouseMove="CanvasMouseMove" Width="Auto" Height="Auto" Margin="0,84,0.333,10.333">
+            <Image  Name="image"  HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="UniformToFill "
+                    />
+        </DockPanel>
+        <StackPanel>
+            <Button Grid.Row="1" Content="Add Image" Click="AddButtonClick" />
+            <Button Grid.Row="1" Content="Refresh" Click="DrawLine" />
+            <Button Grid.Row="1" Content="Remove" Click="Abortion"  />
+            <Button Grid.Row="1" Content="Decrypt" Click="ButtonDecrypt"  />
+            <Button Content="Encrypt" Click="Encrypt"/>
+        </StackPanel>
+    </Grid>
+</Window>
