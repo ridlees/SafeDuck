@@ -5,12 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
-    <Grid HorizontalAlignment="Right" Margin="0,0,0.333,-0.333" Width="783">
-        <TextBox Name="UserText" Margin="0,0,0,67" TextWrapping="Wrap" Text="TextBox" HorizontalAlignment="Right" Width="783" Height="354" VerticalAlignment="Bottom"/>
-        <Button Content="Encrypt" Margin="0,359,618,0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="Encrypt"/>
-        <Button Content="Back" Margin="0,359,520,0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="Back"/>
-        
+        ResizeMode="NoResize"
+        Title="SafeDuck" Height="450" Width="800" >
+    <Grid HorizontalAlignment="Right"  Width="800" Background="Plum" Focusable="False" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox MaxLength="250" Foreground="Yellow" Name="UserText" Margin="0,26,0,0" TextBox.Padding="20px"  TextWrapping="Wrap" Text="I solemnly swear that I am up to no good." HorizontalAlignment="Left" Width="800" Height="354" VerticalAlignment="Top" Background="Plum" TextAlignment="Center" FontSize="48px" TextChanged="UserText_TextChanged" />
+        <Button Content="Encrypt" Margin="0,381,691,0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="Encrypt" Background="LightGoldenrodYellow" Opacity="0.7"/>
+        <Button Content="Back" Margin="0,385,33,0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="Back" Background="LightGoldenrodYellow" Opacity="0.7"/>
+        <Label Name="Number_of_chars" Content="" HorizontalAlignment="Left" Margin="653,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.404,0.564" Width="137"/>
+        <Button Content="Full Encrypt" Margin="0,381,611,0" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="Encrypt_full_button" Background="LightGoldenrodYellow" Opacity="0.7"/>
+
 
     </Grid>
 </Window>

@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="Auto" Width="Auto" WindowState="Maximized">
-    
-    <Grid>
+        Title="SafeDuck" Height="Auto" Width="Auto" WindowState="Maximized">
+
+    <Grid Background="Plum">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <DockPanel x:Name="canvas" Background="White"
+        <DockPanel x:Name="canvas" Background="Plum"
             MouseLeftButtonDown="CanvasMouseLeftButtonDown"
             MouseLeftButtonUp="CanvasMouseLeftButtonUp"
-            MouseMove="CanvasMouseMove" Width="Auto" Height="Auto" Margin="0,84,0.333,10.333">
+            MouseMove="CanvasMouseMove" Width="Auto" Height="Auto" Margin="0,101,0.333,10.333">
             <Image  Name="image"  HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="UniformToFill "
                     />
         </DockPanel>

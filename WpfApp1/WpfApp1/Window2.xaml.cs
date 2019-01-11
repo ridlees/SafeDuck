@@ -5,30 +5,38 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
+using System.Windows.Media.Imaging;
 namespace WpfApp1
 {    
     /// <summary>
     /// Interakční logika pro Window2.xaml
     /// </summary>
     public partial class Window2 : Window
-    {   
-       
+    {
+        private int slide=0;
+        public string Namer ="saveDuckIntro";
         public Window2()
-        {
+        {          
             InitializeComponent();
             //TODO vyuzít user_control k tomu, aby šlo projit dynamicky měnit content okna
-            
         }
         private void OK(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
-            //File.Exists(ABC.txt); File.Exists(Numbers.txt);
-            //TODO kontrola zda ABC a Numbers existují, pokud ne, vytvoří nové z paměti této classy/nebo zavolám novou
+            string Albhabet = "Alphabet.txt";
+            string Position = "positions.txt";
+            if (File.Exists(Albhabet) == true && File.Exists(Position) == true)
+            {
+                DialogResult = true;
+            }
+            else
+            {
+                MessageBox.Show("I dont see my keys. Please, go through first run guide.");
+            }
         }
         private void First_run(object sender, RoutedEventArgs e)
         {
             CreateEncryptkeys();
-            
         }
         public void CreateEncryptkeys()
         {
@@ -36,7 +44,6 @@ namespace WpfApp1
             {
                 GenerateABC();
                 GenerateNumbers();
-
         }
             else
             {
@@ -50,13 +57,12 @@ namespace WpfApp1
             {
                 CreateEncryptAlphabet();
                 CreateEncryptPosition();
-
+                MessageBox.Show("Keys have been generated, don´t loose them.");
             }
             else
             {
                 MessageBox.Show("Aphabet and position exists");
             }
-            ;
         }
         private bool Alphabet()
         {
@@ -70,11 +76,11 @@ namespace WpfApp1
             {
                 return false;
             }
-
         }
-
         private void CreateEncryptPosition()
-        {
+        {   
+
+
             StreamWriter sw = new StreamWriter("positions.txt");
             int x;
             int y;
@@ -82,7 +88,7 @@ namespace WpfApp1
             List<int> allX = new List<int>();
             List<int> allY = new List<int>();
             for (int t=0; t<250;t++)
-            {   //worst dimensions I have found on the picture is 640x480 
+            {   //worst dimensions I have found on the picture is 640x480 //TODO add //more position lists for other sizes (100x100)/(250x250)/(640x480)/other... up to full HD
                 x = rng.Next(640);
                 y = rng.Next(480);
                 while(x == 0 || y == 0)
@@ -104,7 +110,6 @@ namespace WpfApp1
             sw.Close();
         }
         public Random rng = new Random();
-
         public void CreateEncryptAlphabet()
         {
             string[] ABClines = System.IO.File.ReadAllLines("ABC.txt");
@@ -131,9 +136,7 @@ namespace WpfApp1
                 string line = Hash + '/' + lastnumbers;
                 sw.WriteLine(line);
             }
-            sw.Close();
-            
-            //ABC has 111 lines and Numbers have 126 lines
+            sw.Close(); 
         }
         public bool ABCNumbersExist()
         {
@@ -161,7 +164,6 @@ namespace WpfApp1
         public void GenerateNumbers()
         {
             StreamWriter sw = new StreamWriter("Numbers.txt");
-            
             string number;
             for (int symbol=0;symbol < 5; symbol++)
             {
@@ -177,8 +179,41 @@ namespace WpfApp1
             sw.Close();
         }
         public string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
-        //public string ABC= "a/á/b/c/č/d/ď/e/é/ě/f/g/h/ch/i/í/j/k/l/m/n/ň/o/ó/p/q/r/ř/s/š/t/ť/u/ú/ů/v/w/x/y/ý/z/ž/A/Á/B/C/Č/D/Ď/E/É/Ě/F/G/H/CH/I/Í/J/K/L/M/N/Ň/O/Ó/P/Q/R/Ř/S/Š/T/Ť/U/Ú/Ů/V/W/X/Y/Ý/Z/Ž/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
-        //110 symbols of the ABC
-        //125 numbers
+        private void Button_Next(object sender, RoutedEventArgs e)
+        {
+            slide = slide + 1;
+            Refresher();
+        }
+        private void Button_Back(object sender, RoutedEventArgs e)
+        {
+            slide = slide - 1;
+            Refresher();
+        }
+        private void Refresher()
+        {
+            if(slide > 0)
+            {
+                Back.Visibility = Visibility.Visible;
+            }
+            if(slide == 0)
+            {
+                Back.Visibility = Visibility.Hidden;
+            }
+            if(slide==4)
+            {
+                Next.Visibility = Visibility.Hidden;
+                First.Visibility = Visibility.Visible;
+            }
+            if (slide < 4)
+            {
+                Next.Visibility = Visibility.Visible;
+            }
+            //string ImageSource = Namer + slide+".png"; does work, but consumes too much RAM power;
+            //dynamic content will be here
+            //public string ABC= "a/á/b/c/č/d/ď/e/é/ě/f/g/h/ch/i/í/j/k/l/m/n/ň/o/ó/p/q/r/ř/s/š/t/ť/u/ú/ů/v/w/x/y/ý/z/ž/A/Á/B/C/Č/D/Ď/E/É/Ě/F/G/H/CH/I/Í/J/K/L/M/N/Ň/O/Ó/P/Q/R/Ř/S/Š/T/Ť/U/Ú/Ů/V/W/X/Y/Ý/Z/Ž/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
+            //-> doesn´t work, because I was not able to install Unif8 :/
+            //110 symbols of the ABC --> old version
+            //125 numbers
+        }
     }
 }

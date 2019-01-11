@@ -21,54 +21,58 @@ using System.ComponentModel;
 using WpfApp1;
 
 namespace WpfApp1
-{   //I want to thank Rudityas W Anggoro for amazing Icon I am using. Please, check his work here https://dribbble.com/rudityaswahyu
-    //and link to the file I am using is here https://icon-icons.com/icon/animal-character-psyduck-screech-yellow/11268
+{   //I want to thank Rudityas W. Anggoro for the amazing Icon I am using. Please, check his work here https://dribbble.com/rudityaswahyu
+    //and link to the file I am using is here https://icon-icons.com/icon/animal-character-psyduck-screech-yellow/11268 //
     //have fun with this program.
-
-        //Sincerely,
+    //Sincerely,
     //Martin
     /// <summary>
     /// Interakční logika pro MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        int ChildrenExists = 0;
         void Windowclosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult r = MessageBox.Show("Do you want to leave?", "You are leaving SafeID", MessageBoxButton.YesNo);
+            MessageBoxResult r = MessageBox.Show("Do you want to leave?", "You are leaving SafeDuck", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
-                File.Delete("obrazek.png");
-
+                if (File.Exists("obrazek.png") == true)
+                {
+                    if (ChildrenExists == 1)
+                    {
+                        canvas.Children.RemoveAt(ChildrenExists);
+                        ChildrenExists = 0;
+                    }
+                    File.Delete("obrazek.png");
+                }
             }
             else
             {
                 e.Cancel = true;
-
             }
-
         }
         public  void Abortion (object sender, RoutedEventArgs e)
         {
-                canvas.Children.RemoveAt(1);
-                
-
+            if (ChildrenExists == 1)
+            {
+                canvas.Children.RemoveAt(ChildrenExists);
+                ChildrenExists = 0;
+            }
         }
+        //Please, take a moment of silence for Tim May, who passed this week (around 15th of December). Cyperpunk inspired me to create this project and I am sad that Mr. May passed away. Rest in Piece. Please, if you are unaware of his work, check it here: 
         private void DrawLine (object sender, RoutedEventArgs e)
         {
-            Refresh();
-           
+            //TODO drawing           
         }
-       
         private void  Refresh ()
-        {           
+        {
             Bitmap bitmap = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));
             BitmapImage BitmapImag = new BitmapImage();
             BitmapImag = Bitmap2BitmapImage(bitmap);
             var image = new System.Windows.Controls.Image { Source = BitmapImag };
             canvas.Children.Add(image);
-            bitmap.Dispose();
-            
-           
+            bitmap.Dispose();  
         }
         public static BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
         {
@@ -86,9 +90,9 @@ namespace WpfApp1
                 bitmapImage.Freeze();
                 memory.Dispose();
                 return bitmapImage;
-
             }
         }
+                //TODO experimental decryption via číselné řady ... will work via a passphrase (password) that will be encoded as first word of the text- then I will use series of numbers that will tell me where to look for the pixels. Then, you will use a system of Math rules to deterrminate the position of ref pixel. It could be one of 15 pixels around. 
         public void BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
             using (MemoryStream outStream = new MemoryStream())
@@ -106,7 +110,6 @@ namespace WpfApp1
         {
             using (MemoryStream outStream = new MemoryStream())
             {
-
                 BitmapEncoder enc = new BmpBitmapEncoder();
                 enc.Frames.Add(BitmapFrame.Create(bitmapImage));
                 enc.Save(outStream);
@@ -127,9 +130,18 @@ namespace WpfApp1
         }
         private void Encrypt(object sender, RoutedEventArgs e)
         {
-            canvas.Children.RemoveAt(1);
-            Window1 win1 = new Window1();
-            win1.ShowDialog();
+            if( ChildrenExists== 1) { 
+            canvas.Children.RemoveAt(ChildrenExists);
+                ChildrenExists = 0;
+                Window1 win1 = new Window1();
+                win1.ShowDialog();
+               // Refresh(); --> doesnt make sense in this context
+            }
+            else
+            {
+                MessageBox.Show("Please, add a picture to continue. How can I encrypt your text into your picture without it?", "ERROR - No image added");
+            }
+            
         }
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
@@ -147,6 +159,7 @@ namespace WpfApp1
                 {
                     canvas.Children.Add(image);
                     BitmapImage2Bitmap(bitmap);
+                    ChildrenExists = 1;
 
                 }
                 else
@@ -157,39 +170,55 @@ namespace WpfApp1
             }
 
         }
-        //TODO drawing with mouse button
+        //TODO margin-top a few px
+        //TODO drawing with mouse button ---> I will throw this idea away, kinda stupid and hard to work on.
        // private System.Windows.Controls.Image draggedImage;
        // private System.Windows.Point mousePosition;
-
         private void CanvasMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           //
+           //Button
         }
-
         private void CanvasMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //
+            //Button released
         }
-
         private void CanvasMouseMove(object sender, MouseEventArgs e)
         {
-           //
+           //Draw line move
         }
         public void ButtonDecrypt(object sender, RoutedEventArgs e)
         {
            string Text = Decrypt();
-            MessageBoxResult r = MessageBox.Show(Text, "Do you want to save your message?", MessageBoxButton.YesNo);
+            char uvozovky= '"';
+            MessageBoxResult r = MessageBox.Show("The clear message is: "+uvozovky+Text+uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
-                System.IO.File.WriteAllText("encrypted.txt", Text);
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.FileName = "encrypted"; // Default file name
+                dlg.DefaultExt = ".txt"; // Default file extension
+                dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+                Nullable<bool> result = dlg.ShowDialog();
+
+                // Process save file dialog box results
+                if (result == true)
+                {
+                    // Save document
+                    string filename = dlg.FileName;
+                    System.IO.File.WriteAllText(filename + ".txt", Text);
+                } 
+                else
+                {
+                    MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+                }
             }
         }
-
         public string Decrypt()
         {
             Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));
             string Text = "";
             string[] Positions = System.IO.File.ReadAllLines("positions.txt"); //now I have all positions here;
+            //TODO test
             for (int DecryptRun = 0; DecryptRun <250; DecryptRun++) //for each char I check the pixels
             {
                 int R = 0;
@@ -202,13 +231,11 @@ namespace WpfApp1
                 int Ref = Int32.Parse(Poses[2]);
                 int yref; //now I know where to look
                 if (Ref == 1)
-                {
-                    
+                {      
                     yref = YOrigin - 1;
                 }
             else
             {
-                    
                     yref = YOrigin + 1;
                 }
                 System.Drawing.Color cref = img.GetPixel(xOrigin, yref);
@@ -216,13 +243,29 @@ namespace WpfApp1
                 R = cref.R - corigin.R;
                 G = cref.G - corigin.G;
                 B = cref.B - corigin.B;
+                if (R < 0)
+                {
+                    R = R * -1;
+                }
+                if (G < 0)
+                {
+                    G = G * -1;
+                }
+                if (B < 0)
+                {
+                    B = B * -1;
+                }
                 char Symbol = DecryptAlpha(R, G, B);
+                if (Symbol == ']')
+                {
+                    return Text;
+                }
                 Text = Text + Symbol;
             }
             return Text;
-        } //Decryption works, TODO ---> "the only message show (delete from text all [ symbols)
+        } 
         public char DecryptAlpha(int R, int G, int B)
-        {
+        {   
             char Symbol = ' ';
             string[] Alphabet = System.IO.File.ReadAllLines("Alphabet.txt");
             var list = Alphabet.Take(75).ToList();
@@ -242,8 +285,16 @@ namespace WpfApp1
                     Symbol = Dante[0];
                 }
             }
-
             return Symbol;
+        }
+        public void Switch() //not used now
+        {   //to save the changed picture into the original file
+            //Unfortunately, VS needs the original file to be open the whole time it is used, it can not be saved into a new place//tried many times, but VS always showed me a GDI error.
+            File.Delete("obrazek.png");
+            Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek-line.png"));
+            img.Save("obrazek.png");
+            img.Dispose();
+            File.Delete("obrazek-line.png");
         }
         public MainWindow()
         {
@@ -258,8 +309,6 @@ namespace WpfApp1
             {
                 this.Close();
             }
-
-        }
- 
+        } 
     }
 }
