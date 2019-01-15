@@ -24,6 +24,7 @@
             <Button Grid.Row="1" Content="Refresh" Click="DrawLine" />
             <Button Grid.Row="1" Content="Remove" Click="Abortion"  />
             <Button Grid.Row="1" Content="Decrypt" Click="ButtonDecrypt"  />
+            <Button Grid.Row="1" Content="Decrypt full" Click="ButtonDecrypt_full"  />
             <Button Content="Encrypt" Click="Encrypt"/>
         </StackPanel>
     </Grid>

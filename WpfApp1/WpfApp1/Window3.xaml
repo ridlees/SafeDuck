@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="Your Password" Height="62.5" Width="200" ResizeMode="NoResize" Background="Plum"
+        Title="Your Password" Height="150" Width="300" ResizeMode="NoResize" Background="Plum"
         KeyDown="Enter">
     <Grid>
-        <TextBox MaxLength="10" Name="password"  HorizontalAlignment="Left" Height="33" TextWrapping="Wrap" FontSize="10px" Text="Please write up to 10 chars. Then hit Enter" VerticalAlignment="Top" Width="192"  Background="Plum" />
+        <TextBox MouseDoubleClick="Password_MouseClick" MaxLength="10" Name="password"  HorizontalAlignment="Left" Height="121" TextWrapping="Wrap" FontSize="29px" Text="Please write up to 10 chars. Then hit Enter" VerticalAlignment="Top" Width="294"  Background="Plum" />
 
     </Grid>
 </Window>

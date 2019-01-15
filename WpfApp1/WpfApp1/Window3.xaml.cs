@@ -24,6 +24,10 @@ namespace WpfApp1
             InitializeComponent();
            
         }
+        private void Password_MouseClick(Object sender, MouseEventArgs e)
+        {
+            password.Text = String.Empty;
+        }
         private void Enter (object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)

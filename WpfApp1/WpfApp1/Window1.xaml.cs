@@ -233,7 +233,8 @@ namespace WpfApp1
             {
                 char Char = arr[i];
                 List<int> RGBnumbers = RGBset(Char, 1);
-                Passlist[i] = RGBnumbers[0] + " " + RGBnumbers[1] + " " + RGBnumbers[2];
+                string passline = RGBnumbers[0] + " " + RGBnumbers[1] + " " + RGBnumbers[2];
+                Passlist.Insert(i, passline);
             }
             return Passlist;
         }
@@ -253,14 +254,14 @@ namespace WpfApp1
                     {
                         if(open_position_symbol < SymbolOpen.Count())
                         {
-                            number = SymbolOpen[open_position_symbol] + symbol + symbole + symbola;
+                            number = SymbolOpen[open_position_symbol] + "/" + symbol  + symbole  + symbola;
                         }
                         else if (open_position_symbol >= SymbolOpen.Count())
                         {
-                            number = SymbolOpen[SymbolOpen.Count()] + symbol + symbole + symbola;
+                            number = "]" + "/" + symbol   + symbole + symbola;
                             
                         }
-                        AplhabetList[open_position_symbol] = number;
+                        AplhabetList.Insert(open_position_symbol, number);
                         sw.WriteLine(number);
                         open_position_symbol++;
                     }
@@ -268,16 +269,12 @@ namespace WpfApp1
             }
             sw.Close();
         }
+
         private void Encrypt_full_button(object sender, RoutedEventArgs e)
-        {
-            Window3 win3 = new Window3();
-            win3.Show();   
-                
-                }
-        private void Encrypt_experimental(object sender, RoutedEventArgs e)
     {
             GenerateOpenAlphabet();
             Window3 password = new Window3();
+            password.ShowDialog();
             string passphrase = password.password.Text;
             for (int m = 10 - passphrase.Length; m > 0; m = m - 1)
             {
@@ -324,6 +321,7 @@ namespace WpfApp1
         if (Saved == 1)
         {
             MessageBox.Show("The process was succesfull", "Hurray, your words are now secret");
+                File.Delete("Aplhabet_open.txt");
         }
         else
         {
@@ -352,7 +350,7 @@ namespace WpfApp1
                     y++;
                     x = x - img.Width;
                 }
-                Jumps[Passpheres] = next;
+                Jumps.Insert(Passpheres,next);
                 System.Drawing.Color c = img.GetPixel(x, y+1);
                 int Red = c.R - R;
                 int Green = c.G - G;
@@ -373,13 +371,17 @@ namespace WpfApp1
                  yalphabet = 2 * Jumps[5] - 3 * Jumps[0];
             }
             int XAplha=0;
+            int firstyalphabet = yalphabet;
             for (int k = 0; k < AplhabetList.Count();k++)
             {
                 string Aplhabess = AplhabetList[k];
-                string[] AphaInt = Aplhabess.Split(' ');
-                int R = Int32.Parse(AphaInt[0]);
-                int G = Int32.Parse(AphaInt[1]);
-                int B = Int32.Parse(AphaInt[2]);
+                string[] AphaInt = Aplhabess.Split('/');
+                char[] RGBarray = AphaInt[1].ToCharArray(0, AphaInt[1].Length);
+
+                //TODO AphaInt[0] = the letter ... what about creating a list of only the numbers?
+                int R = RGBarray[0] - '0';
+                int G = RGBarray[1] - '0';
+                int B = RGBarray[2] - '0';
                 if (XAplha > img.Width)
                 {
                     yalphabet = yalphabet + 2;
@@ -421,10 +423,21 @@ namespace WpfApp1
                 {
                     y = 3;
                 }
-                if (y == yalphabet && y== yalphabet-1)
+                if (numberofyalpha != 0)
                 {
-                    y =y + 3;
+                    if (y == firstyalphabet && y == firstyalphabet - 1)
+                    {
+                        y = y + 3*numberofyalpha;
+                    }
                 }
+                if (numberofyalpha == 0)
+                {
+                    if (y == yalphabet && y == yalphabet - 1)
+                    {
+                        y = y + 3;
+                    }
+                }
+                
                 System.Drawing.Color c = img.GetPixel(x, y+1);
                 int Red = c.R - R;
                 int Green = c.G - G;

@@ -37,6 +37,9 @@ namespace WpfApp1
             MessageBoxResult r = MessageBox.Show("Do you want to leave?", "You are leaving SafeDuck", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
+                try
+                {
+                      
                 if (File.Exists("obrazek.png") == true)
                 {
                     if (ChildrenExists == 1)
@@ -47,18 +50,30 @@ namespace WpfApp1
                     File.Delete("obrazek.png");
                 }
             }
+                catch (IOException ie)
+                {
+                    // Extract some information from this exception, and then 
+                    // throw it to the parent method.         
+                    throw;
+                }
+
+            }
             else
             {
                 e.Cancel = true;
             }
         }
-        public  void Abortion (object sender, RoutedEventArgs e)
+        public void Abort ()
         {
-            if (ChildrenExists == 1)
+            if (ChildrenExists != 0)
             {
                 canvas.Children.RemoveAt(ChildrenExists);
-                ChildrenExists = 0;
+                ChildrenExists = ChildrenExists - 1;
             }
+        }
+        public  void Abortion (object sender, RoutedEventArgs e)
+        {
+            Abort();
         }
         //Please, take a moment of silence for Tim May, who passed this week (around 15th of December). Cyperpunk inspired me to create this project and I am sad that Mr. May passed away. Rest in Piece. Please, if you are unaware of his work, check it here: 
         private void DrawLine (object sender, RoutedEventArgs e)
@@ -145,6 +160,9 @@ namespace WpfApp1
         }
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
+            Abort();
+            if (File.Exists("obrazek.png")==true)
+            { File.Delete("obrazek.png"); }
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Filter =
                 "Image Files (*.png;*.jpg; *.jpeg; *.gif; *.bmp)|*.png;*.jpg; *.jpeg; *.gif; *.bmp";
@@ -159,7 +177,7 @@ namespace WpfApp1
                 {
                     canvas.Children.Add(image);
                     BitmapImage2Bitmap(bitmap);
-                    ChildrenExists = 1;
+                    ChildrenExists = ChildrenExists + 1;
 
                 }
                 else
@@ -215,7 +233,9 @@ namespace WpfApp1
         }
         public string Decrypt()
         {
-            Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
             string Text = "";
             string[] Positions = System.IO.File.ReadAllLines("positions.txt"); //now I have all positions here;
             //TODO test
@@ -295,6 +315,76 @@ namespace WpfApp1
             img.Save("obrazek.png");
             img.Dispose();
             File.Delete("obrazek-line.png");
+        }
+        public void ButtonDecrypt_full(object sender, RoutedEventArgs e)
+        {
+            Window3 password = new Window3();
+            password.ShowDialog();
+            string User_password = password.password.Text;
+            //I get the password and I need to find the User_password via open alphabet on first lines. 
+            //then I need to find the alphabet and generate alphabet file from this line
+            // and then I can run "almost" normal decryption :D
+            GenerateOpenAlphabet();
+            PasswordFinder(User_password);
+            //string Text = Decrypt();
+            char uvozovky = '"';
+            MessageBoxResult r = MessageBox.Show("The clear message is: " + uvozovky + User_password + uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
+            if (r == MessageBoxResult.Yes)
+            {
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.FileName = "encrypted"; // Default file name
+                dlg.DefaultExt = ".txt"; // Default file extension
+                dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+                Nullable<bool> result = dlg.ShowDialog();
+
+                // Process save file dialog box results
+                if (result == true)
+                {
+                    // Save document
+                    string filename = dlg.FileName;
+                    System.IO.File.WriteAllText(filename + ".txt", User_password);
+                }
+                else
+                {
+                    MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+                }
+            }
+        }
+        public List<string> AplhabetList = new List<string>();
+        public void PasswordFinder(string password)
+        {
+            MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+        }
+        public void GenerateOpenAlphabet()
+        {
+            string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
+            string[] SymbolOpen = ABC.Split('/');
+            int open_position_symbol = 0;
+            StreamWriter sw = new StreamWriter("Aplhabet_open.txt");
+            string number = "";
+            for (int symbol = 0; symbol < 5; symbol++)
+            {
+                for (int symbole = 0; symbole < 3; symbole++)
+                {
+                    for (int symbola = 0; symbola < 5; symbola++)
+                    {
+                        if (open_position_symbol < SymbolOpen.Count())
+                        {
+                            number = SymbolOpen[open_position_symbol] + "/" + symbol + symbole + symbola;
+                        }
+                        else if (open_position_symbol >= SymbolOpen.Count())
+                        {
+                            number = "]" + "/" + symbol + symbole + symbola;
+
+                        }
+                        AplhabetList.Insert(open_position_symbol, number);
+                        sw.WriteLine(number);
+                        open_position_symbol++;
+                    }
+                }
+            }
+            sw.Close();
         }
         public MainWindow()
         {
