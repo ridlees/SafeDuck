@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.ComponentModel;
 
 namespace WpfApp1
 {
@@ -19,10 +20,22 @@ namespace WpfApp1
     /// </summary>
     public partial class Window3 : Window
     {
+        void PasswordClose(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult r = MessageBox.Show("Do you want to leave without writing your password?", "You need to press enter to proceed", MessageBoxButton.YesNo);
+            if (r == MessageBoxResult.Yes)
+            {
+                //nothing
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
         public Window3()
         {
             InitializeComponent();
-           
+            this.Closing += new CancelEventHandler(this.PasswordClose);
         }
         private void Password_MouseClick(Object sender, MouseEventArgs e)
         {
@@ -32,8 +45,8 @@ namespace WpfApp1
         {
             if(e.Key == Key.Enter)
                  {
-                Close();
-
+                this.Closing -= new CancelEventHandler(this.PasswordClose);
+                DialogResult = true;
             }
 
         }

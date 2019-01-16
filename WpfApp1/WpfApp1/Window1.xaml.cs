@@ -177,8 +177,11 @@ namespace WpfApp1
         }
         public void Editpicture(List<string> RGB, List<string> Positionslist)
         {
-            
-            Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));        
+
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
+                    
             for (int Positionnumb = 0; Positionnumb < Positionnumber; Positionnumb++)
             {
                 string RGBint = RGB[Positionnumb];
@@ -273,65 +276,74 @@ namespace WpfApp1
         private void Encrypt_full_button(object sender, RoutedEventArgs e)
     {
             GenerateOpenAlphabet();
-            Window3 password = new Window3();
-            password.ShowDialog();
-            string passphrase = password.password.Text;
-            for (int m = 10 - passphrase.Length; m > 0; m = m - 1)
+            Window3 password = new Window3();          
+            bool r = (bool)password.ShowDialog();
+            if (r == true)
             {
-                passphrase = passphrase + ']';
-            }
-            List<string> Passlist = new List<string>();
-            Passlist = passphrase2passlist(passphrase);
-            
-            Userinput = UserText.Text;
-        if (Userinput.Length < 251)
-        {
-            if (Userinput.Length == 250)
-            {
-                //Nothing :)
+                string passphrase = password.password.Text;
+                for (int m = 10 - passphrase.Length; m > 0; m = m - 1)
+                {
+                    passphrase = passphrase + ']';
+                }
+                List<string> Passlist = new List<string>();
+                Passlist = passphrase2passlist(passphrase);
+
+                Userinput = UserText.Text;
+                if (Userinput.Length < 251)
+                {
+                    if (Userinput.Length == 250)
+                    {
+                        //Nothing :)
+                    }
+                    else
+                    {
+                        for (int n = 250 - Userinput.Length; n > 0; n = n - 1)
+                        {
+                            Userinput = Userinput + ']';
+                        }
+
+                    }
+
+                    char[] arr;
+                    arr = Userinput.ToCharArray(0, Userinput.Length);
+                    //is always 250 chars -->list of all positions :)
+                    Positionnumber = 0;
+                    for (int i = 0; i < Userinput.Length; i++)
+                    {
+                        char Char = arr[i];
+                        List<int> RGBnumbers = RGBset(Char, 0);
+                        RGBsettolister(RGBnumbers);
+                        Positionnumber = Positionnumber + 1;
+
+                    }
+                    Editpicture_experimental(RGBsettolists, Passlist);
+                    //create list of RGBnumbers
+                }
+                else
+                {
+                    MessageBox.Show("The input is longer than 250 chars, please, rewrite it", "Input is too large for me");
+                }
+                if (Saved == 1)
+                {
+                    MessageBox.Show("The process was succesfull", "Hurray, your words are now secret");
+                    File.Delete("Aplhabet_open.txt");
+                }
+                else
+                {
+                    MessageBox.Show("Sorry, please, use the encrypt button again to save your picture", "You cancelled your save :(");
+                }
             }
             else
             {
-                for (int n = 250 - Userinput.Length; n > 0; n = n - 1)
-                {
-                    Userinput = Userinput + ']';
-                }
-
-            }
-            
-            char[] arr;
-            arr = Userinput.ToCharArray(0, Userinput.Length);
-            //is always 250 chars -->list of all positions :)
-            Positionnumber = 0;
-            for (int i = 0; i < Userinput.Length; i++)
-            {
-                    char Char = arr[i];
-                    List<int> RGBnumbers = RGBset(Char,0);
-                    RGBsettolister(RGBnumbers);
-                    Positionnumber = Positionnumber + 1;
-
-                }
-            Editpicture_experimental(RGBsettolists, Passlist);
-            //create list of RGBnumbers
-        }
-        else
-        {
-            MessageBox.Show("The input is longer than 250 chars, please, rewrite it", "Input is too large for me");
-        }
-        if (Saved == 1)
-        {
-            MessageBox.Show("The process was succesfull", "Hurray, your words are now secret");
-                File.Delete("Aplhabet_open.txt");
-        }
-        else
-        {
-            MessageBox.Show("Sorry, please, use the encrypt button again to save your picture", "You cancelled your save :(");
-        }
+                MessageBox.Show("I am sorry, please, write your password and hit enter to proceed", "Password-input error");
+            }    
     }
         public void Editpicture_experimental(List<string> RGB, List<string> Passwords)
         {
-            
-            Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));
+
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
             int x = 0;
             int y = 0;
             List<int> Jumps = new List<int>();
@@ -456,6 +468,7 @@ namespace WpfApp1
             if (result == true)
             {
                 string filename = dlg.FileName;
+                if (File.Exists(filename) == true) { File.Delete(filename); }
                 img.Save(filename, ImageFormat.Png);
                 img.Dispose();
                 Saved = 1;

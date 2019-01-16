@@ -26,9 +26,7 @@ namespace WpfApp1
     //have fun with this program.
     //Sincerely,
     //Martin
-    /// <summary>
-    /// Interakční logika pro MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         int ChildrenExists = 0;
@@ -82,7 +80,9 @@ namespace WpfApp1
         }
         private void  Refresh ()
         {
-            Bitmap bitmap = new Bitmap(System.Drawing.Image.FromFile("obrazek.png"));
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap bitmap = new Bitmap(imgur);
+            imgur.Dispose();
             BitmapImage BitmapImag = new BitmapImage();
             BitmapImag = Bitmap2BitmapImage(bitmap);
             var image = new System.Windows.Controls.Image { Source = BitmapImag };
@@ -134,6 +134,7 @@ namespace WpfApp1
                 {
                     outStream.Dispose();
                     return false; //this should be uncommon, but who knows what will the user do.
+                    //I need to expect anything possible from them
                 }
                 else
                 {
@@ -206,29 +207,36 @@ namespace WpfApp1
         }
         public void ButtonDecrypt(object sender, RoutedEventArgs e)
         {
-           string Text = Decrypt();
-            char uvozovky= '"';
-            MessageBoxResult r = MessageBox.Show("The clear message is: "+uvozovky+Text+uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
-            if (r == MessageBoxResult.Yes)
+         if (File.Exists("obrazek.png")== true)
             {
-                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.FileName = "encrypted"; // Default file name
-                dlg.DefaultExt = ".txt"; // Default file extension
-                dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
-
-                Nullable<bool> result = dlg.ShowDialog();
-
-                // Process save file dialog box results
-                if (result == true)
+                string Text = Decrypt();
+                char uvozovky = '"';
+                MessageBoxResult r = MessageBox.Show("The clear message is: " + uvozovky + Text + uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
+                if (r == MessageBoxResult.Yes)
                 {
-                    // Save document
-                    string filename = dlg.FileName;
-                    System.IO.File.WriteAllText(filename + ".txt", Text);
-                } 
-                else
-                {
-                    MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+                    Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                    dlg.FileName = "encrypted"; // Default file name
+                    dlg.DefaultExt = ".txt"; // Default file extension
+                    dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+                    Nullable<bool> result = dlg.ShowDialog();
+
+                    // Process save file dialog box results
+                    if (result == true)
+                    {
+                        // Save document
+                        string filename = dlg.FileName;
+                        System.IO.File.WriteAllText(filename + ".txt", Text);
+                    }
+                    else
+                    {
+                        MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+                    }
                 }
+            }
+           else
+            {
+                MessageBox.Show("I am sorry, but there is no picture added", "Add-Error");
             }
         }
         public string Decrypt()
@@ -309,9 +317,12 @@ namespace WpfApp1
         }
         public void Switch() //not used now
         {   //to save the changed picture into the original file
+            //not needed, will remove during decluttering
             //Unfortunately, VS needs the original file to be open the whole time it is used, it can not be saved into a new place//tried many times, but VS always showed me a GDI error.
             File.Delete("obrazek.png");
-            Bitmap img = new Bitmap(System.Drawing.Image.FromFile("obrazek-line.png"));
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek-line.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
             img.Save("obrazek.png");
             img.Dispose();
             File.Delete("obrazek-line.png");
@@ -319,7 +330,9 @@ namespace WpfApp1
         public void ButtonDecrypt_full(object sender, RoutedEventArgs e)
         {
             Window3 password = new Window3();
-            password.ShowDialog();
+            bool r1 = (bool)password.ShowDialog();
+            if (r1 == true)
+            {   
             string User_password = password.password.Text;
             //I get the password and I need to find the User_password via open alphabet on first lines. 
             //then I need to find the alphabet and generate alphabet file from this line
@@ -345,16 +358,63 @@ namespace WpfApp1
                     string filename = dlg.FileName;
                     System.IO.File.WriteAllText(filename + ".txt", User_password);
                 }
-                else
+                if (result == false)
                 {
                     MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
                 }
             }
         }
+            else
+            {
+                MessageBox.Show("I am sorry, but you didn´t input the password", "Password_Input-Error");
+            }
+        }
         public List<string> AplhabetList = new List<string>();
+        public List<int> Jumplist = new List<int>();
         public void PasswordFinder(string password)
-        {
-            MessageBox.Show("I am sorry, but you didn´t choose the location", "Save-Error");
+        { //monsterous function
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
+            char[] arr;
+            for (int m = 10 - password.Length; m > 0; m = m - 1)
+            {
+                password = password + ']';
+            }
+            arr = password.ToCharArray(0, password.Length);
+            string[] Passwurd = System.IO.File.ReadAllLines("Aplhabet_open.txt");
+            var list = Passwurd.Take(75).ToList();
+            List<string> passwurdstrings = new List<string>(list);
+            List<string> passwordRGB = new List<string>();
+            for (int passwordfind = 0; passwordfind < 10; passwordfind++)
+            {
+                int Found = 0;
+                while (Found !=1)
+                {
+                    int i = 0;
+                    string str = passwurdstrings[i];
+                    string[] Poses = str.Split('/');
+                    char[] arte = Poses[0].ToCharArray(0,1);
+                    if (arte[0] == arr[passwordfind])
+                    {
+                        passwordRGB.Insert(passwordfind, Poses[1]);
+                        Found = 1;
+
+                    }
+                    i++;
+                }
+                Found = 0;
+            }
+            //now I have all RGB passwords in my passwordRGB list :/
+
+            //Look at the line and then go wau
+            int x = 0;
+            int y = 0;
+            for (int pixelpassword = 0; pixelpassword <10; pixelpassword++)
+            {
+                //get the three values from string, look at the color from pixel x/y and then if matched, continue :)
+                //change into while function, because we don´t want to go through the whole row N times. :)
+            }
         }
         public void GenerateOpenAlphabet()
         {
