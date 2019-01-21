@@ -333,15 +333,14 @@ namespace WpfApp1
             bool r1 = (bool)password.ShowDialog();
             if (r1 == true)
             {   
-            string User_password = password.password.Text;
             //I get the password and I need to find the User_password via open alphabet on first lines. 
             //then I need to find the alphabet and generate alphabet file from this line
             // and then I can run "almost" normal decryption :D
             GenerateOpenAlphabet();
-            PasswordFinder(User_password);
+            string User_message=PasswordFinder(password.password.Text);
             //string Text = Decrypt();
             char uvozovky = '"';
-            MessageBoxResult r = MessageBox.Show("The clear message is: " + uvozovky + User_password + uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
+            MessageBoxResult r = MessageBox.Show("The clear message is: " + uvozovky + User_message + uvozovky, "Do you want to save your message?", MessageBoxButton.YesNo);
             if (r == MessageBoxResult.Yes)
             {
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -356,7 +355,7 @@ namespace WpfApp1
                 {
                     // Save document
                     string filename = dlg.FileName;
-                    System.IO.File.WriteAllText(filename + ".txt", User_password);
+                    System.IO.File.WriteAllText(filename + ".txt", User_message);
                 }
                 if (result == false)
                 {
@@ -369,10 +368,13 @@ namespace WpfApp1
                 MessageBox.Show("I am sorry, but you didn´t input the password", "Password_Input-Error");
             }
         }
-        public List<string> AplhabetList = new List<string>();
-        public List<int> Jumplist = new List<int>();
-        public void PasswordFinder(string password)
+        public string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
+        public string ABCwith = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]/]/]/]/]/]/]/";
+        public List<string> AplhabetList = new List<string>(); //place where I store the whole alphabet (so letter/and three digits)
+        public List<int> Jumplist = new List<int>(); //place to store all jumps
+        public string PasswordFinder(string password)
         { //monsterous function
+            string User_message = "";
             System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
             Bitmap img = new Bitmap(imgur);
             imgur.Dispose();
@@ -389,19 +391,21 @@ namespace WpfApp1
             for (int passwordfind = 0; passwordfind < 10; passwordfind++)
             {
                 int Found = 0;
-                while (Found !=1)
+                int i = 0;
+                while (Found == 0) //doesnt work and for cycle is too long
                 {
-                    int i = 0;
+                    
                     string str = passwurdstrings[i];
                     string[] Poses = str.Split('/');
                     char[] arte = Poses[0].ToCharArray(0,1);
+                    
+                    i++;
                     if (arte[0] == arr[passwordfind])
                     {
                         passwordRGB.Insert(passwordfind, Poses[1]);
                         Found = 1;
-
                     }
-                    i++;
+                   
                 }
                 Found = 0;
             }
@@ -410,15 +414,174 @@ namespace WpfApp1
             //Look at the line and then go wau
             int x = 0;
             int y = 0;
-            for (int pixelpassword = 0; pixelpassword <10; pixelpassword++)
+            int foundpixel = 0;
+            int lastpixel = 0;
+            while ( foundpixel != 10)
             {
-                //get the three values from string, look at the color from pixel x/y and then if matched, continue :)
-                //change into while function, because we don´t want to go through the whole row N times. :)
+                string RGBs = passwordRGB[foundpixel];
+                char[] arte = RGBs.ToCharArray(0, RGBs.Length);
+                if ( x > img.Width) //if I am on the end or not
+                {
+                    x =x - img.Width;
+                    y = y + 2;
+                }
+                System.Drawing.Color cref = img.GetPixel(x, y);
+                System.Drawing.Color corigin = img.GetPixel(x, y + 1);
+                int R = cref.R - corigin.R;
+                int G = cref.G - corigin.G;
+                int B = cref.B - corigin.B;
+                if (R < 0)
+                {
+                    R = R * -1;
+                }
+                if (G < 0)
+                {
+                    G = G * -1;
+                }
+                if (B < 0)
+                {
+                    B = B * -1;
+                }
+                if (arte[0]- '0' == R && arte[1] - '0' == G && arte[2] - '0' == B)
+                {
+                    
+                    int Next = x - lastpixel;
+                    Jumplist.Insert(foundpixel, Next);
+                    foundpixel++;
+                    lastpixel = x;
+                }
+                x++;
+
             }
+            //look at the aplhabet now. I have Jumps
+            int yalphabet = 0;
+            if (3 * Jumplist[0] > 2 * Jumplist[5])
+            {
+                yalphabet = 3 * Jumplist[0] - 2 * Jumplist[5];
+            }
+            else
+            {
+                yalphabet = 2 * Jumplist[5] - 3 * Jumplist[0];
+            }
+            int firstyalphabet = yalphabet;
+            //now i know where the alphabet is stored, so the next step is to go for alphabet directly.
+            string[] SymbolOpen = ABCwith.Split('/');
+            x = 0;// i have the last pixel in lastpixel, so I dont care about this sweetie :)
+            int yalpha = 0; //but I care aboút Y
+            int numberofyalpha = 0; //for encoding
+            for (int alphastored = 0; alphastored < 74; alphastored++ )
+            {
+                if (x > img.Width)
+                {
+                    yalpha = yalpha + 2;
+                    x = x - img.Width;
+                    numberofyalpha++;
+                }
+                System.Drawing.Color cref = img.GetPixel(x, yalpha);
+                System.Drawing.Color corigin = img.GetPixel(x, yalpha + 1);
+                int R = cref.R - corigin.R;
+                int G = cref.G - corigin.G;
+                int B = cref.B - corigin.B;
+                if (R < 0)
+                {
+                    R = R * -1;
+                }
+                if (G < 0)
+                {
+                    G = G * -1;
+                }
+                if (B < 0)
+                {
+                    B = B * -1;
+                }
+                string line = SymbolOpen[alphastored] + '/' + R + G + B;
+                AplhabetList.Insert(alphastored, line);
+                x++;
+            } //now I have the alphabet ready to be used. So, another for cycle is here for us :/
+            x = lastpixel; //so, now we are back at the last password pixel
+            int Jumpnumber = 0; //number of jumps
+            for (int Message = 0; Message<250; Message++)
+            {
+                if (Jumpnumber > 9)
+                {
+                    Jumpnumber = 0;
+                }
+                x = x + Jumplist[Jumpnumber];
+                Jumpnumber++;
+                if (x > img.Width)
+                {
+                    y = y + 2;
+                    x =  x - img.Width;
+                }
+                if (y + 1 > img.Height)
+                {
+                    y = 3;
+                }
+                if (numberofyalpha != 0)
+                {
+                    if (y == firstyalphabet && y == firstyalphabet - 1)
+                    {
+                        y = y + 3 * numberofyalpha;
+                    }
+                }
+                if (numberofyalpha == 0)
+                {
+                    if (y == firstyalphabet && y == firstyalphabet - 1)
+                    {
+                        y = y + 3;
+                    }
+                }
+                //checks if x/y are in good places :)
+                System.Drawing.Color cref = img.GetPixel(x, y);
+                System.Drawing.Color corigin = img.GetPixel(x, y + 1);
+                int R = cref.R - corigin.R;
+                int G = cref.G - corigin.G;
+                int B = cref.B - corigin.B;
+                if (R < 0)
+                {
+                    R = R * -1;
+                }
+                if (G < 0)
+                {
+                    G = G * -1;
+                }
+                if (B < 0)
+                {
+                    B = B * -1;
+                }
+                //now I have the "digits", I need to get letter :)
+                //TODO call this with a full list. 
+                int letterfound = 0;
+                int Alpha = 0;
+                while (letterfound == 0){
+                  string lister= AplhabetList[Alpha];
+                    Alpha++;
+                    string[] RGBletters = lister.Split('/');
+                    char[] arte = RGBletters[1].ToCharArray(0, RGBletters[1].Length);
+                    if (arte[0] - '0' == R && arte[1] - '0' == G && arte[2] - '0' == B)
+                    {
+                        //I have the char now
+                        letterfound = 1;
+                        char[] Dante = RGBletters[0].ToCharArray(0, RGBletters[0].Length);
+                        char Symbol = Dante[0];
+                        if (Symbol == '[')
+                        {
+                            //nothing
+                        }
+                        else
+                        {
+                            User_message = User_message + Symbol;
+                        }
+                        
+                    }
+                    
+                }
+            }
+
+            return User_message; //Doesnt returnt thw correct message, works against me
         }
         public void GenerateOpenAlphabet()
-        {
-            string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
+        { 
             string[] SymbolOpen = ABC.Split('/');
             int open_position_symbol = 0;
             StreamWriter sw = new StreamWriter("Aplhabet_open.txt");

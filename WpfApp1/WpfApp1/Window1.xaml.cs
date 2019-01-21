@@ -204,9 +204,7 @@ namespace WpfApp1
                 if (Green <0) { Green = c.G + G; RGBError++; }
 
                 img.SetPixel(xOrigin, YOrigin, System.Drawing.Color.FromArgb(Red, Green, Blue)); 
-                //TODO when picture is mostly white --> add a checkbox to the Text WIndow (window1) which will set last pixel on the picture to either black or white
-                //TODO then detect this pixel on the start ---> will change how Setpixel is counted. If white  (c.R - R, c.G - G, c.B - B) / if black (c.R + R, c.G + G, c.B + B)
-            }
+                            }
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.FileName = "encrypted"; // Default file name
             dlg.DefaultExt = ".png"; // Default file extension
@@ -399,7 +397,7 @@ namespace WpfApp1
                     yalphabet = yalphabet + 2;
                     numberofyalpha++;
                     XAplha = 0;
-                } //todo change the 424 line to work with more aplhabet lines
+                } //todo change the 424 line to work with more aplhabet lines, i think I did
                 System.Drawing.Color c = img.GetPixel(XAplha, yalphabet + 1);
                 int Red = c.R - R;
                 int Green = c.G - G;
