@@ -369,7 +369,7 @@ namespace WpfApp1
             }
         }
         public string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
-        public string ABCwith = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]/]/]/]/]/]/]/";
+        public string ABCwith = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]/]/]/]/]/]/]/]";
         public List<string> AplhabetList = new List<string>(); //place where I store the whole alphabet (so letter/and three digits)
         public List<int> Jumplist = new List<int>(); //place to store all jumps
         public string PasswordFinder(string password)
@@ -392,7 +392,7 @@ namespace WpfApp1
             {
                 int Found = 0;
                 int i = 0;
-                while (Found == 0) //doesnt work and for cycle is too long
+                while (Found == 0) // and for cycle is too long
                 {
                     
                     string str = passwurdstrings[i];
@@ -416,11 +416,11 @@ namespace WpfApp1
             int y = 0;
             int foundpixel = 0;
             int lastpixel = 0;
-            while ( foundpixel != 10)
+            while ( foundpixel < 10)
             {
                 string RGBs = passwordRGB[foundpixel];
                 char[] arte = RGBs.ToCharArray(0, RGBs.Length);
-                if ( x > img.Width) //if I am on the end or not
+                if ( x >= img.Width) //if I am on the end or not
                 {
                     x =x - img.Width;
                     y = y + 2;
@@ -444,8 +444,13 @@ namespace WpfApp1
                 }
                 if (arte[0]- '0' == R && arte[1] - '0' == G && arte[2] - '0' == B)
                 {
-                    
-                    int Next = x - lastpixel;
+                    int Next = 0;
+                    //TODO last pixel
+                    if (x< lastpixel) { Next = img.Width - lastpixel;
+                        Next = Next + x;
+                    }
+                    else {Next= x - lastpixel;
+                         }
                     Jumplist.Insert(foundpixel, Next);
                     foundpixel++;
                     lastpixel = x;
@@ -467,18 +472,18 @@ namespace WpfApp1
             //now i know where the alphabet is stored, so the next step is to go for alphabet directly.
             string[] SymbolOpen = ABCwith.Split('/');
             x = 0;// i have the last pixel in lastpixel, so I dont care about this sweetie :)
-            int yalpha = 0; //but I care aboút Y
+            int yalpha = y; //but I care aboút Y
             int numberofyalpha = 0; //for encoding
-            for (int alphastored = 0; alphastored < 74; alphastored++ )
+            for (int alphastored = 0; alphastored < 75; alphastored++ )
             {
                 if (x > img.Width)
                 {
-                    yalpha = yalpha + 2;
+                    yalphabet = yalphabet + 2;
                     x = x - img.Width;
                     numberofyalpha++;
                 }
-                System.Drawing.Color cref = img.GetPixel(x, yalpha);
-                System.Drawing.Color corigin = img.GetPixel(x, yalpha + 1);
+                System.Drawing.Color cref = img.GetPixel(x, yalphabet);
+                System.Drawing.Color corigin = img.GetPixel(x, yalphabet + 1);
                 int R = cref.R - corigin.R;
                 int G = cref.G - corigin.G;
                 int B = cref.B - corigin.B;
@@ -498,17 +503,22 @@ namespace WpfApp1
                 AplhabetList.Insert(alphastored, line);
                 x++;
             } //now I have the alphabet ready to be used. So, another for cycle is here for us :/
+            //test
+           
+            
+            ///test
             x = lastpixel; //so, now we are back at the last password pixel
+            y = yalpha;
             int Jumpnumber = 0; //number of jumps
             for (int Message = 0; Message<250; Message++)
             {
-                if (Jumpnumber > 9)
+                if (Jumpnumber == 10)
                 {
                     Jumpnumber = 0;
                 }
                 x = x + Jumplist[Jumpnumber];
                 Jumpnumber++;
-                if (x > img.Width)
+                if (x >= img.Width)
                 {
                     y = y + 2;
                     x =  x - img.Width;
@@ -550,7 +560,8 @@ namespace WpfApp1
                     B = B * -1;
                 }
                 //now I have the "digits", I need to get letter :)
-                //TODO call this with a full list. 
+                //here is an issue. The AplhabetList works, but the values i get from this while doesn´t work
+                //need to rewrite it works for first 9... the bug is in window1 probably
                 int letterfound = 0;
                 int Alpha = 0;
                 while (letterfound == 0){
@@ -564,7 +575,7 @@ namespace WpfApp1
                         letterfound = 1;
                         char[] Dante = RGBletters[0].ToCharArray(0, RGBletters[0].Length);
                         char Symbol = Dante[0];
-                        if (Symbol == '[')
+                        if (Symbol == ']')
                         {
                             //nothing
                         }
@@ -577,8 +588,21 @@ namespace WpfApp1
                     
                 }
             }
-
-            return User_message; //Doesnt returnt thw correct message, works against me
+            StreamWriter sw1 = new StreamWriter("decodejump.txt");
+            for (int i2 = 0; i2 < 9; i2++)
+            {
+                string lol = "" + Jumplist[i2];
+                sw1.WriteLine(lol);
+            }
+            sw1.WriteLine("");
+            sw1.WriteLine("");
+            for (int in2 = 0; in2 < 75; in2++)
+            {
+                string lol = "" + AplhabetList[in2];
+                sw1.WriteLine(lol); 
+            }
+            sw1.Dispose();
+            return User_message; //Doesnt returnt thw correct message, works against me, mistake is in the alphabet;
         }
         public void GenerateOpenAlphabet()
         { 

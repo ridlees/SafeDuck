@@ -301,7 +301,6 @@ namespace WpfApp1
                         }
 
                     }
-
                     char[] arr;
                     arr = Userinput.ToCharArray(0, Userinput.Length);
                     //is always 250 chars -->list of all positions :)
@@ -312,7 +311,6 @@ namespace WpfApp1
                         List<int> RGBnumbers = RGBset(Char, 0);
                         RGBsettolister(RGBnumbers);
                         Positionnumber = Positionnumber + 1;
-
                     }
                     Editpicture_experimental(RGBsettolists, Passlist);
                     //create list of RGBnumbers
@@ -336,6 +334,40 @@ namespace WpfApp1
                 MessageBox.Show("I am sorry, please, write your password and hit enter to proceed", "Password-input error");
             }    
     }
+        public System.Drawing.Bitmap Clearline (System.Drawing.Bitmap img, List<string> Passwords)
+        {  //
+            for(int passwordnumber = 0; passwordnumber < 10 ; passwordnumber++) {
+                string Passw = Passwords[passwordnumber];
+                string[] PassInt = Passw.Split(' ');
+                int R = Int32.Parse(PassInt[0]);
+                int G = Int32.Parse(PassInt[1]);
+                int B = Int32.Parse(PassInt[2]);
+                for (int y = 0; y < 4; y++)
+            { 
+                for (int x = 0; x < img.Width ;x++)
+                {
+                        System.Drawing.Color c = img.GetPixel(x, y);
+                        System.Drawing.Color cREF = img.GetPixel(x, y + 1);
+                        int Red = c.R - cREF.R;
+                        int Green = c.G - cREF.G;
+                        int Blue = c.B - cREF.B;
+                        if (Red < 0) { Red = cREF.R - c.R; }
+                        if (Blue < 0) { Blue = cREF.B - c.B; }
+                        if (Green < 0) { Green = cREF.G - c.G; }
+                        if (Red == R && Green == G && Blue == B)
+                        {
+                            int cG = c.G + 4;
+                            if (cG >255) { cG = c.G - 4; }
+                            
+                            img.SetPixel(x, y, System.Drawing.Color.FromArgb(c.R, cG, c.B)); 
+                        }
+                        //doesnt work
+                    }
+            }
+
+            }
+            return img;
+        }
         public void Editpicture_experimental(List<string> RGB, List<string> Passwords)
         {
 
@@ -345,6 +377,7 @@ namespace WpfApp1
             int x = 0;
             int y = 0;
             List<int> Jumps = new List<int>();
+            img = Clearline(img, Passwords);
             for (int Passpheres = 0; Passpheres < 10; Passpheres++)
             {
                 int next=rng.Next(img.Width / 10) + 1;
@@ -382,13 +415,15 @@ namespace WpfApp1
             }
             int XAplha=0;
             int firstyalphabet = yalphabet;
-            for (int k = 0; k < AplhabetList.Count();k++)
-            {
-                string Aplhabess = AplhabetList[k];
-                string[] AphaInt = Aplhabess.Split('/');
-                char[] RGBarray = AphaInt[1].ToCharArray(0, AphaInt[1].Length);
+            string[] alphafromfile = System.IO.File.ReadAllLines("Alphabet.txt"); //TODO LIst
+            var list = alphafromfile.Take(75).ToList();
+            List<string> Alphastringsfromfile = new List<string>(list);
 
-                //TODO AphaInt[0] = the letter ... what about creating a list of only the numbers?
+            for (int k = 0; k < Alphastringsfromfile.Count();k++)
+            {
+                string Aplhabess = Alphastringsfromfile[k];
+                string[] AphaInt = Aplhabess.Split('/');
+                char[] RGBarray = AphaInt[1].ToCharArray(0, AphaInt[1].Length); 
                 int R = RGBarray[0] - '0';
                 int G = RGBarray[1] - '0';
                 int B = RGBarray[2] - '0';
@@ -410,6 +445,15 @@ namespace WpfApp1
             }
             y = y++;
             int jumpNumber = 0;
+            //test
+            StreamWriter sw1 = new StreamWriter("encryptjumps.txt");
+            for (int i2 = 0; i2 < 9; i2++)
+            {
+                string lol = "" + Jumps[i2];
+                sw1.WriteLine(lol);
+            }
+            sw1.Dispose();
+            ///test
             for (int Charnumb = 0; Charnumb <RGB.Count() ; Charnumb++)
             {
                 string RGBint = RGB[Charnumb];
@@ -419,20 +463,17 @@ namespace WpfApp1
                 int B = Int32.Parse(RGBposes[2]);
                 x = x + Jumps[jumpNumber];
                 jumpNumber++;
-                if (jumpNumber == 9)
+                if (jumpNumber == 10)
                 {
                     jumpNumber = 0;
                 }
-                if (x > img.Width)
+                if (x >= img.Width)
                 {
                     y++;
                     y++;
                     x = x - img.Width;
                 }
-                if (y+1>img.Height)
-                {
-                    y = 3;
-                }
+                
                 if (numberofyalpha != 0)
                 {
                     if (y == firstyalphabet && y == firstyalphabet - 1)
@@ -447,7 +488,10 @@ namespace WpfApp1
                         y = y + 3;
                     }
                 }
-                
+                if (y + 1 > img.Height && y + 1 == img.Height)
+                {
+                    y = 3;
+                }
                 System.Drawing.Color c = img.GetPixel(x, y+1);
                 int Red = c.R - R;
                 int Green = c.G - G;
