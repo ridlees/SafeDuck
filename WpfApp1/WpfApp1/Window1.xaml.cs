@@ -344,7 +344,7 @@ namespace WpfApp1
                 int B = Int32.Parse(PassInt[2]);
                 for (int y = 0; y < 4; y++)
             { 
-                for (int x = 0; x < img.Width ;x++)
+                for (int x = 0; x < img.Width;x++)
                 {
                         System.Drawing.Color c = img.GetPixel(x, y);
                         System.Drawing.Color cREF = img.GetPixel(x, y + 1);
@@ -359,7 +359,7 @@ namespace WpfApp1
                             int cG = c.G + 4;
                             if (cG >255) { cG = c.G - 4; }
                             
-                            img.SetPixel(x, y, System.Drawing.Color.FromArgb(c.R, cG, c.B)); 
+                            img.SetPixel(x, y+1, System.Drawing.Color.FromArgb(c.R, cG, c.B)); 
                         }
                         //doesnt work
                     }
@@ -509,10 +509,15 @@ namespace WpfApp1
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
             {
+                
                 string filename = dlg.FileName;
-                if (File.Exists(filename) == true) { File.Delete(filename); }
+               if (File.Exists(filename) == true) { File.Delete(filename); 
+                    
+                    
+                }
                 img.Save(filename, ImageFormat.Png);
                 img.Dispose();
+                
                 Saved = 1;
             }
             // Thank you random user, here is the comment that helped me a lot https://stackoverflow.com/questions/48607238/system-runtime-interopservices-externalexception

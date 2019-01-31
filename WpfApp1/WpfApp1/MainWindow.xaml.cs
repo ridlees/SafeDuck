@@ -185,7 +185,7 @@ namespace WpfApp1
                 {
                     MessageBox.Show("The image is not supported. Please, use another one that has at least 500 px");
                 }
-
+                
             }
 
         }
@@ -329,7 +329,8 @@ namespace WpfApp1
         }
         public void ButtonDecrypt_full(object sender, RoutedEventArgs e)
         {
-            Window3 password = new Window3();
+            if (File.Exists("obrazek.png") == true) { 
+                Window3 password = new Window3();
             bool r1 = (bool)password.ShowDialog();
             if (r1 == true)
             {   
@@ -367,6 +368,8 @@ namespace WpfApp1
             {
                 MessageBox.Show("I am sorry, but you didn´t input the password", "Password_Input-Error");
             }
+        }
+            else { MessageBox.Show("I am sorry, but there is no picture added", "No_picture_added-Error"); }
         }
         public string ABC = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]";
         public string ABCwith = "A/a/B/b/C/c/D/d/E/e/F/f/G/g/H/h/I/i/J/j/K/k/L/l/M/m/N/n/O/o/P/p/Q/q/R/r/S/s/T/t/U/u/V/v/W/w/X/x/Y/y/Z/z/0/1/2/3/4/5/6/7/8/9/@/./-/ /_/]/]/]/]/]/]/]/]";
