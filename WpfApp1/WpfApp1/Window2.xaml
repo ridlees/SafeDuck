@@ -15,11 +15,12 @@
         <Grid>
             
         </Grid>
-        <Button Background="LightGoldenrodYellow" Content="Continue" HorizontalAlignment="Left" Margin="675,183.671,0,0" VerticalAlignment="Top" Width="75" Click="OK" Grid.Row="1" Opacity="0.7"/>
+        <Button Background="LightGoldenrodYellow" Content="Continue" HorizontalAlignment="Left" Margin="675,183.667,0,11" Width="75" Click="OK" Grid.Row="1" Opacity="0.7"/>
         <Button Name="First" Background="LightGoldenrodYellow" Content="First Run" HorizontalAlignment="Left" Margin="600,183.671,0,0" VerticalAlignment="Top" Width="75" Click="First_run" Grid.Row="1" Opacity="0.7" Visibility="Hidden"/>
         <Image Name="Welcome" HorizontalAlignment="Left" Height="376" Margin="46,10,0,0" VerticalAlignment="Top" Width="704" Grid.RowSpan="2" Source="saveDuckIntro.png" Visibility="Visible"/>
         <Button Content=">" Name="Next" HorizontalAlignment="Left" Margin="769,12,0,0" VerticalAlignment="Top" Width="16" Grid.RowSpan="2" Height="381" Click="Button_Next" Visibility="Visible"/>
         <Button Content="." Name="Back"  HorizontalAlignment="Right" Margin="0,12,770.667,0" VerticalAlignment="Top" Width="16" Grid.RowSpan="2" Height="381" Click="Button_Back" Visibility="Hidden" />
+        <Button Background="LightGoldenrodYellow" Content="Copy my Git" HorizontalAlignment="Left" Margin="166,183.667,0,11" Width="75" Click="Copy" Grid.Row="1" Opacity="0.7"/>
 
     </Grid>
 </Window>

@@ -76,7 +76,7 @@ namespace WpfApp1
         //Please, take a moment of silence for Tim May, who passed this week (around 15th of December). Cyperpunk inspired me to create this project and I am sad that Mr. May passed away. Rest in Piece. Please, if you are unaware of his work, check it here: 
         private void DrawLine (object sender, RoutedEventArgs e)
         {
-            //TODO drawing           
+            Refresh();
         }
         private void  Refresh ()
         {
@@ -118,6 +118,7 @@ namespace WpfApp1
                 enc.Save(outStream);
                 System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
                 bitmap.Save("obrazek.png", ImageFormat.Png);
+                bitmap.Dispose();
                 outStream.Dispose();
             }
         }
@@ -129,8 +130,8 @@ namespace WpfApp1
                 enc.Frames.Add(BitmapFrame.Create(bitmapImage));
                 enc.Save(outStream);
                 System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
-                int n1 = bitmap.Size.Height * bitmap.Size.Width;
-                if (n1 < 500)
+               
+                if (bitmap.Size.Height < 250 | bitmap.Size.Width < 250)
                 {
                     outStream.Dispose();
                     return false; //this should be uncommon, but who knows what will the user do.
@@ -147,8 +148,7 @@ namespace WpfApp1
         private void Encrypt(object sender, RoutedEventArgs e)
         {
             if( ChildrenExists== 1) { 
-            canvas.Children.RemoveAt(ChildrenExists);
-                ChildrenExists = 0;
+            
                 Window1 win1 = new Window1();
                 win1.ShowDialog();
                // Refresh(); --> doesnt make sense in this context
@@ -183,9 +183,9 @@ namespace WpfApp1
                 }
                 else
                 {
-                    MessageBox.Show("The image is not supported. Please, use another one that has at least 500 px");
+                    MessageBox.Show("The image is not supported. Please, use another one that has at least 250 x 250 px");
                 }
-                
+               
             }
 
         }
@@ -239,13 +239,39 @@ namespace WpfApp1
                 MessageBox.Show("I am sorry, but there is no picture added", "Add-Error");
             }
         }
+        private String[] PositionsFinder()
+        {
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
+            String[] returnvaule;
+            if (img.Width >= 250 && img.Width < 640)
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions0.txt");
+            }
+            if (img.Width >= 640 && img.Width < 1280)
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions1.txt");
+            }
+            if (img.Width >= 1280 && img.Width < 1920)
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions2.txt");
+            }
+            else
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions3.txt");
+            }
+            img.Dispose();
+            return returnvaule;
+        }
+
         public string Decrypt()
         {
             System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
             Bitmap img = new Bitmap(imgur);
             imgur.Dispose();
             string Text = "";
-            string[] Positions = System.IO.File.ReadAllLines("positions.txt"); //now I have all positions here;
+            string[] Positions = PositionsFinder(); //now I have all positions here;
             //TODO test
             for (int DecryptRun = 0; DecryptRun <250; DecryptRun++) //for each char I check the pixels
             {

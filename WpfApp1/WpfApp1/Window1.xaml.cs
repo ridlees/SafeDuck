@@ -25,7 +25,7 @@ namespace WpfApp1
         int Saved = 0;
         int changedText= 0;
         public Random rng = new Random();
-        string[] Positions = System.IO.File.ReadAllLines("positions.txt"); //now I have all positions here;
+        string[] Positions;//now I have all positions here;
         string Userinput;
         public int Positionnumber = 0;
 
@@ -34,10 +34,37 @@ namespace WpfApp1
         {
             InitializeComponent();
             Number_of_chars.Content = "You are fine!";
+            Positions = PositionsFinder();
 
         }
+        private String[] PositionsFinder()
+        {
+            System.Drawing.Image imgur = System.Drawing.Image.FromFile("obrazek.png");
+            Bitmap img = new Bitmap(imgur);
+            imgur.Dispose();
+            String[] returnvaule;
+            if (img.Width >= 250 && img.Width <640) {
+                returnvaule=  System.IO.File.ReadAllLines("positions0.txt");
+            }
+            if (img.Width >= 640 && img.Width < 1280)
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions1.txt");
+            }
+            if (img.Width >= 1280 && img.Width < 1920)
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions2.txt");
+            }
+            else
+            {
+                returnvaule = System.IO.File.ReadAllLines("positions3.txt");
+            }
+            img.Dispose();
+            return returnvaule;
+        }
+
         private void Encrypt(object sender, RoutedEventArgs e)
         {
+         
             Userinput = UserText.Text;
             if (Userinput.Length < 251)
             {
@@ -106,7 +133,8 @@ namespace WpfApp1
                 Alphabet = System.IO.File.ReadAllLines("Alphabet.txt");
             }
             var list = Alphabet.Take(75).ToList();
-            List<string> Alphastrings = new List<string>(list); 
+            List<string> Alphastrings = new List<string>(list);
+            int i = 0;
             if (Char == ']')
             {
                 string stringchar;
@@ -126,8 +154,21 @@ namespace WpfApp1
             }
             else
             {
-                for (int i = 0; i < 68; i++)
+                int found = 0;
+                while (found==0)
                 {
+                    if (i == 75)
+                    {
+                        string strj = Alphastrings[68];
+                        string[] Posesj = strj.Split('/');
+                        char[] arrj = Posesj[1].ToCharArray(0, Posesj[1].Length);
+                        R = arrj[0] - '0';
+                        G = arrj[1] - '0';
+                        B = arrj[2] - '0';
+                        found = 1;
+                       
+                    }
+                    else if (i < 75) { 
                     string stringchar = Alphastrings[i];
                     string[] Poses = stringchar.Split('/');
                     char[] arr;
@@ -140,6 +181,10 @@ namespace WpfApp1
                         R = RGBnumber[0] - '0';
                         G = RGBnumber[1] - '0';
                         B = RGBnumber[2] - '0';
+                        found = 1;
+                    }
+                    
+                    i++;
                     }
                 }
                 char_set.Add(R);
@@ -418,7 +463,6 @@ namespace WpfApp1
             string[] alphafromfile = System.IO.File.ReadAllLines("Alphabet.txt"); //TODO LIst
             var list = alphafromfile.Take(75).ToList();
             List<string> Alphastringsfromfile = new List<string>(list);
-
             for (int k = 0; k < Alphastringsfromfile.Count();k++)
             {
                 string Aplhabess = Alphastringsfromfile[k];
@@ -445,7 +489,6 @@ namespace WpfApp1
             }
             y = y++;
             int jumpNumber = 0;
-            //test
             StreamWriter sw1 = new StreamWriter("encryptjumps.txt");
             for (int i2 = 0; i2 < 9; i2++)
             {
@@ -473,7 +516,6 @@ namespace WpfApp1
                     y++;
                     x = x - img.Width;
                 }
-                
                 if (numberofyalpha != 0)
                 {
                     if (y == firstyalphabet && y == firstyalphabet - 1)
@@ -500,24 +542,19 @@ namespace WpfApp1
                 if (Blue < 0) { Blue = c.B + B; }
                 if (Green < 0) { Green = c.G + G; }
                 img.SetPixel(x, y, System.Drawing.Color.FromArgb(Red, Green, Blue));           
-            }
-            
+            }      
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.FileName = "encrypted"; // Default file name
             dlg.DefaultExt = ".png"; // Default file extension
             dlg.Filter = "PNG files (.png)|*.png"; // Filter files by extension 
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true)
-            {
-                
+            {  
                 string filename = dlg.FileName;
-               if (File.Exists(filename) == true) { File.Delete(filename); 
-                    
-                    
+               if (File.Exists(filename) == true) { File.Delete(filename);  
                 }
                 img.Save(filename, ImageFormat.Png);
-                img.Dispose();
-                
+                img.Dispose(); 
                 Saved = 1;
             }
             // Thank you random user, here is the comment that helped me a lot https://stackoverflow.com/questions/48607238/system-runtime-interopservices-externalexception
@@ -527,27 +564,21 @@ namespace WpfApp1
                 Saved = 0;
             }
         }
-
         private void UserText_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (changedText == 1)
             {
-                
                 Number();
-
             }
-
             if (UserText.Text.Length > 1)
             {
                 changedText = 1;
-      
             }
         else if (UserText.Text.Length == 0)
             {
                 changedText =0;
                 Number_of_chars.Content = "Please, write something";
             }
-            
         }
         private void Number()
         {
@@ -558,7 +589,3 @@ namespace WpfApp1
 
     }
 }
-
-
-
-

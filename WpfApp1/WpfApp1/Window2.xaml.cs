@@ -15,7 +15,6 @@ namespace WpfApp1
     public partial class Window2 : Window
     {
         private int slide=0;
-        public string Namer ="saveDuckIntro";
         public Window2()
         {          
             InitializeComponent();
@@ -23,9 +22,8 @@ namespace WpfApp1
         }
         private void OK(object sender, RoutedEventArgs e)
         {
-            string Albhabet = "Alphabet.txt";
-            string Position = "positions.txt";
-            if (File.Exists(Albhabet) == true && File.Exists(Position) == true)
+            bool Test = Alphabet();
+            if (Test == true)
             {
                 DialogResult = true;
             }
@@ -56,7 +54,11 @@ namespace WpfApp1
             if (Alphabet() == false)
             {
                 CreateEncryptAlphabet();
-                CreateEncryptPosition();
+                
+                CreateEncryptPosition(0);
+                CreateEncryptPosition(1);
+                CreateEncryptPosition(2);
+                CreateEncryptPosition(3);
                 MessageBox.Show("Keys have been generated, don´t loose them.");
             }
             else
@@ -67,8 +69,12 @@ namespace WpfApp1
         private bool Alphabet()
         {
             string Albhabet = "Alphabet.txt";
-            string Position = "positions.txt";
-            if (File.Exists(Albhabet) == true && File.Exists(Position) == true)
+            string Position0 = "positions0.txt";
+            string Position1 = "positions1.txt";
+            string Position2 = "positions2.txt";
+            string Position3 = "positions3.txt";
+
+            if (File.Exists(Albhabet) == true && File.Exists(Position0) == true && File.Exists(Position1) == true && File.Exists(Position2) == true && File.Exists(Position3) == true)
             {
                 return true;
             }
@@ -77,29 +83,29 @@ namespace WpfApp1
                 return false;
             }
         }
-        private void CreateEncryptPosition()
-        {   
+        private void CreateEncryptPosition(int numebr)
+        {
 
-
-            StreamWriter sw = new StreamWriter("positions.txt");
+            string filename = "positions" + numebr + ".txt";
+            StreamWriter sw = new StreamWriter(filename);
             int x;
             int y;
             int z;
+            int Xnext = 250;
+            int Ynext = 250;            
+            if (numebr == 1) { Xnext = 640; Ynext = 480; }
+            if (numebr == 2) { Xnext = 1280; Ynext = 720; }
+            if (numebr == 3) { Xnext = 1920; Ynext = 1080; }
             List<int> allX = new List<int>();
             List<int> allY = new List<int>();
             for (int t=0; t<250;t++)
             {   //worst dimensions I have found on the picture is 640x480 //TODO add //more position lists for other sizes (100x100)/(250x250)/(640x480)/other... up to full HD
-                x = rng.Next(640);
-                y = rng.Next(480);
-                while(x == 0 || y == 0)
+                x = rng.Next(Xnext);
+                y = rng.Next(Ynext);
+                while(x == 0 || y == 0 || allX.Contains(x) && allY.Contains(y))
                 {
-                    x = rng.Next(640);
-                    y = rng.Next(480);
-                }
-                while (allX.Contains(x) && allY.Contains(y))
-                {
-                    x = rng.Next(640);
-                    y = rng.Next(480);
+                    x = rng.Next(Xnext);
+                    y = rng.Next(Ynext);
                 }
                 allX.Add(x);
                 allY.Add(y);
@@ -182,15 +188,32 @@ namespace WpfApp1
         private void Button_Next(object sender, RoutedEventArgs e)
         {
             slide = slide + 1;
-            Refresher();
+            Uri Source = UriCatcher();
+            Refresher(Source);
         }
         private void Button_Back(object sender, RoutedEventArgs e)
         {
             slide = slide - 1;
-            Refresher();
+            Uri Source = UriCatcher();
+            Refresher(Source);
         }
-        private void Refresher()
+        private void Copy(object sender, RoutedEventArgs e)
         {
+            Clipboard.SetText("https://github.com/ridlees/SafeDuck");
+        }
+        private Uri UriCatcher ()
+        {
+            
+            string Addition = "pack://application:,,,/" + "SaveDuckIntro" + slide + ".png";
+            Uri Source = new Uri(Addition);
+
+
+            return Source;
+        }
+        private void Refresher(Uri Source)
+        {
+            
+            Welcome.Source = new BitmapImage(Source); 
             if(slide > 0)
             {
                 Back.Visibility = Visibility.Visible;
@@ -199,14 +222,15 @@ namespace WpfApp1
             {
                 Back.Visibility = Visibility.Hidden;
             }
-            if(slide==4)
+            if(slide==5)
             {
                 Next.Visibility = Visibility.Hidden;
                 First.Visibility = Visibility.Visible;
             }
-            if (slide < 4)
+            if (slide < 5)
             {
                 Next.Visibility = Visibility.Visible;
+                First.Visibility = Visibility.Hidden;
             }
             //string ImageSource = Namer + slide+".png"; does work, but consumes too much RAM power;
             //dynamic content will be here

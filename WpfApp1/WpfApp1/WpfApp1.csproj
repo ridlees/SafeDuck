@@ -154,6 +154,12 @@
     <Content Include="saveDuckIntro.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="SaveDuckIntro4.png" />
+    <Resource Include="SaveDuckIntro5.png" />
+    <Resource Include="SaveDuckIntro0.png" />
+    <Resource Include="saveDuckIntro1.png" />
+    <Resource Include="SaveDuckIntro2.png" />
+    <Resource Include="SaveDuckIntro3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
